@@ -12,9 +12,8 @@ TYP
 struct LinkedNode
 {
 	T mData;
-	LinkedNode* next;
-	LinkedNode* last;
-	class iterator : std::iterator {}; //can I create class inside struct???
+	LinkedNode<T>* next;
+	LinkedNode<T>* last;
 };
 
 TYP
@@ -37,9 +36,6 @@ public:
 	void removeLast();
 	void remove(T removalCandidate);
 	
-	//iterator
-	class iterator: std::iterator {};
-
 private:
 	void destroy();
 private:
@@ -50,24 +46,27 @@ private:
 TYP
 LinkedList<T>::LinkedList<T>()
 {
-	mFirst = new LinkedNode();
-	mLast = mFirst;
+	mFirst = NULL;
+	mLast = NULL;
 }
 
 TYP
 void LinkedList<T>::destroy()
 {
-	LinkedList<T>::iterator iter = 0;
-	for (iter = mFirst; iter != mLast; iter++)
+	LinkedNode<T>* current = mFirst;
+	while (current)
 	{
-		delete iter;
+		LinkedNode<T>* old = current;
+		current = current->next;
+		delete old;
+		old = NULL;
 	}
 	mFirst = NULL;
 	mLast = NULL;
 }
 
 TYP
-LinkedList<T>::LinkedList()
+LinkedList<T>::~LinkedList()
 {
 	destroy();
 }
@@ -75,30 +74,141 @@ LinkedList<T>::LinkedList()
 TYP
 LinkedList<T>::LinkedList<T>(const LinkedList<T>& rhs)
 {
-	mFirst = new LinkedNode<T>();
-	mFirst->mData = rhs.mFirst->mData;
+	if (rhs.isEmpty())
+		return;
+	mFirst = new LinkedNode<T>;
+	mFirst->mData = rhs->mFirst->mData;
 	mFirst->last = NULL;
-	LinkedNode<T>::iterator iter = rhs.mFirst;
-	LinkedNode<T>* last = mFirst; //keeps track of the last node
-	LinkedNode<T>::iter           //need an iterator here
-	for (iter; iter != rhs.mLast; iter++)
+	LinkedNode<T>* currnew = mFirst;
+	LinkedNode<T>* currold = rhs->mFirst;
+	while (currold->next)
 	{
-		iter->
-		last->next = new LinkedNode<T>();
-		/*last->next->mData = iter->mData;
-		last->next->last = last;
-		last = last->next;*/
-		last->next->mData = iter->
+		currnew->next = new LinkedNode<T>;
+		currnew->next->last = currnew;
+		currnew = currnew->next;
+		currold = currold->next;
+		currnew->mData = currold->mData;
 	}
-	mLast = last;
+	mLast = currnew;
+	mLast->next = NULL;
 }
 
 TYP
 LinkedList<T>& LinkedList<T>::operator=(const LinkedList<T>& rhs)
 {
+	if (*this == rhs)
+		return *this;
 	destroy();
-	
+	if (rhs.isEmpty())
+		return;
+	mFirst = new LinkedNode<T>;
+	mFirst->mData = rhs->mFirst->mData;
+	mFirst->last = NULL;
+	LinkedNode<T>* currnew = mFirst;
+	LinkedNode<T>* currold = rhs->mFirst;
+	while (currold->next)
+	{
+		currnew->next = new LinkedNode<T>;
+		currnew->next->last = currnew;
+		currnew = currnew->next;
+		currold = currold->next;
+		currnew->mData = currold->mData;
+	}
+	mLast = currnew;
+	mLast->next = NULL;
+	return *this;
+}
 
+TYP
+void LinkedList<T>::insertFirst(T data)
+{
+	LinkedNode<T>* newnode = new LinkedNode<T>;
+	newnode->mData = data;
+	newnode->next = mFirst;
+	newnode->last = NULL;
+	mFirst->last = newnode;
+	mFirst = newnode;
+}
+
+TYP
+void LinkedList<T>::insertLast(T data)
+{
+	LinkedNode<T>* newnode = new LinkedNode<T>;
+	newnode->next = NULL;
+	newnode->last = mLast;
+	newnode->mData = data;
+	mLast->next = newnode;
+	mLast = newnode;
+}
+
+TYP
+bool LinkedList<T>::isEmpty()
+{
+	if (!mFirst)
+		return true;
+	else
+		return false;
+}
+
+TYP
+LinkedNode<T>* LinkedList<T>::getFirst()
+{
+	return mFirst;
+}
+
+TYP
+LinkedNode<T>* LinkedList<T>::getLast()
+{
+	return mLast;
+}
+
+TYP
+void LinkedList<T>::insertAfter(T tKey, T tData)
+{
+	LinkedNode<T>* curr = mFirst;
+	for (int i = 0; i < tKey; i++)
+	{
+		curr = curr->next;
+		if (curr == NULL)
+			return;
+	}
+	LinkedNode<T>* newnode = new LinkedNode<T>;
+	newnode->mData = tData;
+	newnode->next = curr->next;
+	newnode->next->last = newnode;
+	curr->next = newnode;
+	newnode->last = curr;
+}
+
+TYP
+void LinkedList<T>::removeFirst()
+{
+	mFirst = mFirst->next;
+	delete mFirst->last;
+	mFirst->last = NULL;
+}
+
+TYP
+void LinkedList<T>::removeLast()
+{
+	mLast = mLast->last;
+	delete mLast->next;
+	mLast->next = NULL;
+}
+
+TYP
+void LinkedList<T>::remove(T removalCandidate)
+{
+	LinkedNode<T>* curr = mFirst;
+	int i = 0;
+	while (curr->mData != removalCandidate)
+	{
+		curr = curr->next;
+	}
+	curr->next->last = curr->last;
+	curr->last->next = curr->next;
+	delete curr;
+	curr = NULL;
 }
 #endif
 
