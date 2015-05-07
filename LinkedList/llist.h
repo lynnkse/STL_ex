@@ -97,26 +97,27 @@ LinkedList<T>::LinkedList<T>(const LinkedList<T>& rhs)
 TYP
 LinkedList<T>& LinkedList<T>::operator=(const LinkedList<T>& rhs)
 {
-	if (*this == rhs)
+	if (this == &rhs) //check for self-assignment
 		return *this;
 	destroy();
-	if (rhs.isEmpty())
-		return;
-	mFirst = new LinkedNode<T>;
-	mFirst->mData = rhs->mFirst->mData;
-	mFirst->last = NULL;
-	LinkedNode<T>* currnew = mFirst;
-	LinkedNode<T>* currold = rhs->mFirst;
-	while (currold->next)
+	if (rhs.mFirst)
 	{
-		currnew->next = new LinkedNode<T>;
-		currnew->next->last = currnew;
-		currnew = currnew->next;
-		currold = currold->next;
-		currnew->mData = currold->mData;
+		mFirst = new LinkedNode<T>;
+		mFirst->mData = rhs.mFirst->mData;
+		mFirst->last = NULL;
+		LinkedNode<T>* currnew = mFirst;
+		LinkedNode<T>* currold = rhs.mFirst;
+		while (currold->next)
+		{
+			currnew->next = new LinkedNode<T>;
+			currnew->next->last = currnew;
+			currnew = currnew->next;
+			currold = currold->next;
+			currnew->mData = currold->mData;
+		}
+		mLast = currnew;
+		mLast->next = NULL;
 	}
-	mLast = currnew;
-	mLast->next = NULL;
 	return *this;
 }
 
@@ -246,6 +247,11 @@ TYP
 void LinkedList<T>::print()
 {
 	LinkedNode<T>* curr = mFirst;
+	if (isEmpty())
+	{
+		cout << "The list is empty..." << endl;
+		return;
+	}
 	do
 	{
 		cout << curr->mData << ", ";
