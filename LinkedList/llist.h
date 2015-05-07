@@ -26,8 +26,8 @@ public:
 	LinkedList& operator=(const LinkedList& rhs);
 
 	bool isEmpty();
-	LinkedNode<T>* getFirst();
-	LinkedNode<T>* getLast();
+	T getFirst();
+	T getLast();
 
 	void insertFirst(T data);
 	void insertLast(T data);
@@ -127,19 +127,38 @@ void LinkedList<T>::insertFirst(T data)
 	newnode->mData = data;
 	newnode->next = mFirst;
 	newnode->last = NULL;
-	mFirst->last = newnode;
-	mFirst = newnode;
+	if (isEmpty()) //if the list was empty
+	{
+		mFirst = newnode;
+		mLast = newnode;
+	}
+	else
+	{
+		mFirst->last = newnode;
+		mFirst = newnode;
+	}
 }
 
 TYP
 void LinkedList<T>::insertLast(T data)
 {
-	LinkedNode<T>* newnode = new LinkedNode<T>;
-	newnode->next = NULL;
-	newnode->last = mLast;
-	newnode->mData = data;
-	mLast->next = newnode;
-	mLast = newnode;
+	LinkedNode<T>* newnode = new LinkedNode<T>();
+	if (!isEmpty())//if the list wasn't empty
+	{
+		newnode->next = NULL;
+		newnode->last = mLast;
+		newnode->mData = data;
+		mLast->next = newnode;
+		mLast = newnode;
+	}
+	else
+	{
+		newnode->mData = data;
+		mFirst = newnode;
+		mLast = newnode;
+		newnode->next = NULL;
+		newnode->last = NULL;
+	}
 }
 
 TYP
@@ -152,15 +171,15 @@ bool LinkedList<T>::isEmpty()
 }
 
 TYP
-LinkedNode<T>* LinkedList<T>::getFirst()
+T LinkedList<T>::getFirst()
 {
-	return mFirst;
+	return mFirst->mData;
 }
 
 TYP
-LinkedNode<T>* LinkedList<T>::getLast()
+T LinkedList<T>::getLast()
 {
-	return mLast;
+	return mLast->mData;
 }
 
 TYP
@@ -201,13 +220,24 @@ TYP
 void LinkedList<T>::remove(T removalCandidate)
 {
 	LinkedNode<T>* curr = mFirst;
-	int i = 0;
 	while (curr->mData != removalCandidate)
 	{
 		curr = curr->next;
 	}
-	curr->next->last = curr->last;
-	curr->last->next = curr->next;
+	if (curr->next) //if the node was not the last one
+		curr->next->last = curr->last;
+	else //if the node was the last, then previous one becomes the last
+	{
+		curr->last->next = NULL;
+		mLast = curr->last;
+	}
+	if (curr->last) //if the node was not the first one
+		curr->last->next = curr->next;
+	else //if the node was the first one the the next one becomes first
+	{
+		mFirst = curr->next;
+		curr->next->last = NULL;
+	}
 	delete curr;
 	curr = NULL;
 }

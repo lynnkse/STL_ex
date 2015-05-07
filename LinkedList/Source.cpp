@@ -4,6 +4,7 @@
 int main()
 {
 	bool end = false;
+	LinkedList<int> list;
 	while (!end)
 	{
 		cout << "Linked List menu:" << endl;
@@ -11,7 +12,6 @@ int main()
 		cout << "3) Get first node; 4) Get last node; 5) Insert last; 6) Insert first; 7) Insert after; 8) Remove last; 9) Remove first; 10) Remove by value; 11) Display list; 12)Quit" << endl;
 		int i;
 		cin >> i;
-		LinkedList<int> list;
 		switch (i)
 		{
 		case 3://get first node
