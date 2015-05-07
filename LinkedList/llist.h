@@ -35,12 +35,13 @@ public:
 	void removeFirst();
 	void removeLast();
 	void remove(T removalCandidate);
+	void print();
 	
 private:
 	void destroy();
 private:
-	LinkedNode* mFirst;
-	LinkedNode* mLast;
+	LinkedNode<T>* mFirst;
+	LinkedNode<T>* mLast;
 };
 
 TYP
@@ -209,6 +210,18 @@ void LinkedList<T>::remove(T removalCandidate)
 	curr->last->next = curr->next;
 	delete curr;
 	curr = NULL;
+}
+
+TYP
+void LinkedList<T>::print()
+{
+	LinkedNode<T>* curr = mFirst;
+	do
+	{
+		cout << curr->mData << ", ";
+		curr = curr->next;
+	} while (curr);
+	cout << endl;
 }
 #endif
 
